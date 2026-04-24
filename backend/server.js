@@ -17,6 +17,8 @@ app.get("/", (req,res) => {
 //api end point Frontend → HTTP request → Endpoint → Backend logika → Response
 app.use("/api/user",userRoutes);
 
+app.user(notFound);
+app.user(errorHandler);
 
 const PORT = process.env.PORT || 4000;
 app.listen(4000,console.log("Server is running on Port 4000"));
