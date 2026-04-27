@@ -1,0 +1,9 @@
+.App {
+    min-height: 100vh;
+    display: flex;
+    background-image: url("/Users/kecskesgellert/Documents/suliprogramozásbármisuli/webchatapp/folderforwebchat/frontend/src/background.png");
+    background-size: cover;
+    background-position: center;
+    color: black;
+    text-align: center;
+}
