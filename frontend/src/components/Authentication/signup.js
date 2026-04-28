@@ -9,7 +9,9 @@ import {
     Button
 } from "@chakra-ui/react";
 import {useToast} from "@chakra-ui/react";
-import express from "express";
+import axios from "axios";
+import { useHistory } from "react-router-dom"
+
 
 
 const SignUp = () => {
@@ -21,9 +23,10 @@ const SignUp = () => {
     const [pic , setPic] = useState();
     const [loading, setLoading] = useState(false);
     const toast = useToast();
+    const history = useHistory();
 
     const handleClick = () => setShow(!show);
-    const postDetails = (pics) => {
+    const postDetails = (pic) => {
         setLoading(true);
         if(pic === undefined) {
             toast({
@@ -44,7 +47,7 @@ const SignUp = () => {
                 method: "POST",
                 body: data,
             })
-                .then((res) =>.json())
+                .then((res) => res.json())
                 .then(data => {
                     setPic(data.url.toString());
                     console.log(data.url.toString());
@@ -66,8 +69,61 @@ const SignUp = () => {
             return;
         }
     };
+    //megprobaljuk eljuttatni a feltölött képet az adatbazoisba!!!!
+    const submitHandler = async () => {
+        setLoading(true);
+        //megnezuk minden form ki van töltve(helyesen)=>
+        if(!name || !email || !confirmPassword || !password) {
+            toast({
+                title: "Please Fill all the fields",
+                status: " warning",
+                duration: 5000,
+                isClosable: true,
+                position: "botton",
+            });
+            setLoading(false);
+            return;
+        }
 
-    const submitHandler = () => {};
+        if( password !== confirmPassword) {
+            toast({
+                title: "Passwords do not match",
+                status: "warning",
+                duration: 5000,
+                isClosable:true,
+                position: "botton",
+            })
+        }
+        //ha minden fasza megy az adatbazisba!!!
+        try {
+        const config = {
+            headers: {
+                "Content_type": "application/json",
+            },
+            };
+            const {data} = await axios.post(
+                "api/user",
+                    {name,email, password,pic},
+                config
+                );
+            toast({
+                title: "Registration Successful",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+                position: "bottom",
+            });
+
+            localStorage.setItem("userInfo", JSON.stringify(data));
+            setLoading(false)
+            history.push("");
+        } catch ( error) {
+
+        }
+
+
+
+    };
 
     return  (
         <VStack spacing="5px" color= "black">
@@ -115,6 +171,7 @@ const SignUp = () => {
                 width= "100%"
                 style={{ marginTop: 15}}
                 onClick={ submitHandler}
+                isLoading= { loading }
             >Sign Up</Button>
         </VStack>
     );
