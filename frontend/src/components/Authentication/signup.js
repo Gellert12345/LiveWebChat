@@ -16,7 +16,7 @@ import { useHistory } from "react-router-dom"
 
 const SignUp = () => {
     const [show, setShow] = useState(false);
-    const [name, setName] = useState();
+    const [name, setName] = useState("");
     const [email, setEmail] = useState();
     const [confirmPassword, setConfirmPassword] = useState();
     const [password, setPassword] = useState();
@@ -76,10 +76,10 @@ const SignUp = () => {
         if(!name || !email || !confirmPassword || !password) {
             toast({
                 title: "Please Fill all the fields",
-                status: " warning",
+                status: "warning",
                 duration: 5000,
                 isClosable: true,
-                position: "botton",
+                position: "bottom",
             });
             setLoading(false);
             return;
@@ -91,14 +91,14 @@ const SignUp = () => {
                 status: "warning",
                 duration: 5000,
                 isClosable:true,
-                position: "botton",
+                position: "bottom",
             })
         }
         //ha minden fasza megy az adatbazisba!!!
         try {
         const config = {
             headers: {
-                "Content_type": "application/json",
+                "Content-Type": "application/json",
             },
             };
             const {data} = await axios.post(
@@ -116,13 +116,18 @@ const SignUp = () => {
 
             localStorage.setItem("userInfo", JSON.stringify(data));
             setLoading(false)
-            history.push("");
+            history.push("/chats"); //ha minden fasza ide dobjon!
         } catch ( error) {
-
+            toast({
+                title: "Error Occured",
+                description: error.response.data.message,
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+                position: "bottom",
+            });
+            setLoading(false);
         }
-
-
-
     };
 
     return  (
@@ -137,7 +142,7 @@ const SignUp = () => {
             <FormControl id= "email" isRequired>
                 <FormLabel>Email</FormLabel>
                 <Input
-                    type={show? "text" : "password"}
+                    type = "email"
                     placeholder="Enter your Email"
                     onChange ={(e) => setEmail(e.target.value)}
                 />
@@ -146,9 +151,9 @@ const SignUp = () => {
                 <FormLabel>Password</FormLabel>
                 <InputGroup>
                 <Input
-                    type={"password"}
+                    type= { show ? "text" : "password"}
                     placeholder="Enter your Password"
-                    onChange ={(e) => setEmail(e.target.value)}
+                    onChange ={(e) => setPassword(e.target.value)}
                 />
                     <InputRightElement width="4.5rem">
                         <Button h= "1.75rem" size= "sm" onClick={handleClick}>
@@ -157,10 +162,24 @@ const SignUp = () => {
                     </InputRightElement>
                 </InputGroup>
             </FormControl>
+            <FormControl isRequired>
+                <FormLabel>Confirm Password</FormLabel>
+                <Input
+                    type= "password"
+                    placeholder= "Enter confirm password"
+                    value= {confirmPassword}
+                    onChange ={(e) => setConfirmPassword(e.target.value)}
+                    >
+
+                </Input>
+            </FormControl>
+
+
+
             <FormControl id= "pic">
                 <FormLabel>Upload your Picture</FormLabel>
                 <Input
-                    type= "file"
+                    type = "file"
                     p={1.5}
                     accept= "image/*"
                     onChange={(e) => postDetails(e.target.files[0])}
@@ -171,9 +190,11 @@ const SignUp = () => {
                 width= "100%"
                 style={{ marginTop: 15}}
                 onClick={ submitHandler}
-                isLoading= { loading }
+                isLoading= { loading } // legyen egy beépített töltö animació!
             >Sign Up</Button>
         </VStack>
     );
 };
+
+
 export default SignUp;
