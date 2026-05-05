@@ -1,0 +1,69 @@
+//ACCESSCHAT API END POINT!!!!!
+import asyncHandler from "express-async-handler";
+import Chat from "../models/chatModel.js";
+import User from "../models/userModel.js";
+export const accessChat = asyncHandler(async(req ,res) => {
+    const { userId } = req.body;
+
+    if(!userId) {
+        console.log("UserId params not sent with request")
+        return res.sendStatus(400);
+    }
+    var isChat = await Chat.find({
+        isGroupChat: false,
+        $and: [ //$and => mind a 2 értéknek igaznak kell lennie
+            {users:{$elemMatch:{$eq:req.user._id}}},
+            {users:{$elemMatch: {$eq: userId}}},
+        ],
+    })
+        .populate("users", "-password")
+        .populate("latestMessage");
+
+    isChat = await User.populate(isChat, {
+        path: "latestMessage.sender",
+        select: "name pic email",
+    });
+    if(isChat.length > 0) {
+        res.send(isChat[0]); // ha van chat ( 0nal tobb uzenet) akkor elkuldi neked
+    } else { // ha nincs csinal egyet
+        var chatData = {
+            chatName: "sender",
+            isGroupChat: false,
+            users: [req.user._id, userId],
+        };
+        //store in the database =>
+        try {
+            const createdChat = await Chat.create(chatData); //létrehozás
+            const FullChat = await Chat.findOne({_id: createdChat._id}).populate(
+                "users",
+                "-password"
+            );
+            res.status(200).send(FullChat);
+        } catch (error) {
+            res.status(400);
+            throw new Error(error.message);
+        }
+    }
+})
+
+export const fetchChats = asyncHandler(async(req,res) => {
+    //check with user is loged in and query all the chat for the user
+    try {
+        Chat.find({users:{$elemMatch:{$eq:req.user._id}}})//add vissza az összes chat-et amibe benne van a user!
+            .populate("users", "-password") //populate az id helyére berakjak az egész user adatatot
+            .populate("groupAdmin", "-password")
+            .populate("latestMessage")
+            .sort({ updatedAt: -1})
+            .then(async(results) => {
+                results = await User.populate(results, {
+                    path: "latestMessage.sender",
+                    select: "name pic email",
+                });
+                //vissza kuldeni az usernek
+                res.status(200).send(results)
+            })
+    } catch (error) {
+        res.status(400);
+        throw new Error(error.message);
+    }
+});

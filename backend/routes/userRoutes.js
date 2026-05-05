@@ -1,9 +1,9 @@
 import express from "express";
-import { registerUser , authUser } from "../controllers/userControllers.js"; // ✔ innen jön
-
+import { registerUser , authUser , allUsers } from "../controllers/userControllers.js"; // ✔ innen jön
+import { protect } from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
-router.route("/").post(registerUser);
+router.route("/").post(registerUser).get(protect , allUsers);
 router.post("/login", authUser);
 
 

@@ -6,6 +6,7 @@ connectDB();
 const app = express();
 import chats from "./data/data.js";
 import userRoutes from "./routes/userRoutes.js"; //adatbazis betöltése
+import chatRoutes from "./routes/chatRoutes.js";
 import { notFound, errorHandler } from "./middlewares/errorMiddleware.js";app.use(express.json()); // hogy frontend röl küldött json adatoz elfogadja a backend
 
 //api=>
@@ -15,6 +16,8 @@ app.get("/", (req,res) => {
 
 //api end point Frontend → HTTP request → Endpoint → Backend logika → Response
 app.use("/api/user",userRoutes);
+
+app.use("/api/chat",chatRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

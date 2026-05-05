@@ -57,4 +57,18 @@ const authUser = asyncHandler(async (req, res) => {
     }
 });
 
-export { registerUser, authUser };
+// api/user?search=gellert
+const allUsers = asyncHandler(async (req, res) => {
+    const keyword = req.query.search? {
+        $or: [
+            {name: {$regex: req.query.search, $options: "i"}},
+            {email: {$regex: req.query.search, $options: "i"}},
+        ] // $or => ha 2 vagy több érték közül bármelyik is igaz akkor igaz lesz
+    }: {}; // else ne törtöénjen semmi ezt jelenti
+
+    const users = await User.find(keyword).find({_id:{$ne:req.user._id}})
+    res.send(users);
+})
+
+
+export { registerUser, authUser , allUsers };

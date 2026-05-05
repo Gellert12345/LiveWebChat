@@ -7,7 +7,7 @@ latestMessage
 groupAdmin
 */
 
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 const chatModel = mongoose.Schema(
     {
         chatName: {type: String, trim: true},
@@ -32,5 +32,5 @@ const chatModel = mongoose.Schema(
 );
 
 const Chat = mongoose.model("Chat",chatModel); // vissza utalunk az elobb definiált Schemara!
-module.exports = Chat;
+export default Chat;
 
