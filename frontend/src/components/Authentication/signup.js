@@ -17,10 +17,10 @@ import { useHistory } from "react-router-dom"
 const SignUp = () => {
     const [show, setShow] = useState(false);
     const [name, setName] = useState("");
-    const [email, setEmail] = useState();
-    const [confirmPassword, setConfirmPassword] = useState();
-    const [password, setPassword] = useState();
-    const [pic , setPic] = useState();
+    const [email, setEmail] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [password, setPassword] = useState("");
+    const [pic , setPic] = useState("");
     const [loading, setLoading] = useState(false);
     const toast = useToast();
     const history = useHistory();
@@ -136,6 +136,7 @@ const SignUp = () => {
                 <FormLabel>Name</FormLabel>
                     <Input
                         placeholder="Enter your Name"
+                        value={name}
                         onChange ={(e) => setName(e.target.value)}
                     />
             </FormControl>
@@ -144,6 +145,7 @@ const SignUp = () => {
                 <Input
                     type = "email"
                     placeholder="Enter your Email"
+                    value={email}
                     onChange ={(e) => setEmail(e.target.value)}
                 />
             </FormControl>
@@ -153,6 +155,7 @@ const SignUp = () => {
                 <Input
                     type= { show ? "text" : "password"}
                     placeholder="Enter your Password"
+                    value={password}
                     onChange ={(e) => setPassword(e.target.value)}
                 />
                     <InputRightElement width="4.5rem">

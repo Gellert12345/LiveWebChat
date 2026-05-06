@@ -67,3 +67,98 @@ export const fetchChats = asyncHandler(async(req,res) => {
         throw new Error(error.message);
     }
 });
+
+export const createGroupChat = asyncHandler(async(req ,res)=> {
+    if (!req.body.users || !req.body.name) {
+        return res.status(400).send({message: "Please fill all the fields"});
+    }
+    var users = JSON.parse(req.body.users);
+
+    //ha group chat kevesebb mint 2 ember(nem group)!
+    if(users.length < 2) {
+        return res
+            .status(400)
+            .send("More than 2 users are requiredn to form a group chat");
+    }
+
+    users.push(req.user);
+
+    //create new query for the database!
+    try {
+        const groupChat = await Chat.create({
+            chatName: req.body.name,
+            users: users,
+            isGroupChat: true,
+            groupAdmin: req.user, //mi leszunk a group adminok mkert mi hoztuk létre!
+        });
+
+        const fullGroupChat = await Chat.findOne({_id:groupChat._id})
+            .populate("users", "-password")
+            .populate("groupAdmin", "-password"); //; end
+        res.status(200).json(fullGroupChat);
+    } catch(error) {
+        res.status(400);
+        throw new Error(error.message);
+    }
+})
+
+export const renameGroup = asyncHandler(async(req,res) => {
+    const { chatId , chatName } = req.body; //frontend kuld json backendbe és ennek az adatatat szedjuk ki
+    const updateChat = await Chat.findByIdAndUpdate(
+        chatId, //melyik chatet
+        {
+            chatName: chatName,
+        },
+        {
+            new:true, //frissetett adjan vissza (name)
+        }
+    )
+        .populate("users","-password")
+        .populate("groupAdmin", "-password");
+
+    //error handaling and json data sending=>
+    if(!updateChat) {
+        res.status(404);
+        throw new Error("Chat not found.");
+    } else {
+        res.json(updateChat) //vissza kuldesz egy json adatot amit a fronted feldolgoz
+    }
+});
+
+export const addToGroupChat = asyncHandler(async(req,res) =>  {
+    const { chatId, userId } = req.body;
+    const added = await Chat.findByIdAndUpdate(chatId, {
+            $push: {users: userId},
+        },
+        {new: true}
+    )
+        .populate("users", "-password")
+        .populate("groupAdmin", "-password");
+
+    if (!added){
+        res.status(404);
+        throw new Error("Chat not found.");
+    } else {
+        res.json(added);
+    }
+})
+
+
+export const removeFromGroup = asyncHandler(async(req, res) => {
+    const {chatId, userId} = req.body;
+    const added = await Chat.findByIdAndUpdate(
+        chatId,
+        {
+            $pull: {users: userId},
+        },
+        {new: true}
+    )
+        .populate("users","-password")
+        .populate("groupAdmin", "-password");
+    if(!added) {
+        res.status(404);
+        throw new Error("Chat not found.");
+    } else {
+        res.json(added);
+    }
+});
