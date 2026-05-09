@@ -2,7 +2,7 @@ import React from "react";
 import {useDisclosure} from "@chakra-ui/hooks";
 import {Button, IconButton, Modal, ModalCloseButton, ModalContent, ModalFooter, ModalOverlay} from "@chakra-ui/react";
 import {ViewIcon} from "@chakra-ui/icons";
-import {ModalBody ,ModalHeader ,} from "@chakra-ui/react";
+import {ModalBody ,ModalHeader ,Image , Text} from "@chakra-ui/react";
 
 export const ProfileModel = ({user,children}) => {
     const {isOpen,onOpen,onClose} = useDisclosure();
@@ -20,13 +20,34 @@ export const ProfileModel = ({user,children}) => {
 
                 />
             )}
-            <Modal isOpen={isOpen} onClose={onClose}>
+            <Modal size="lg" isOpen={isOpen} onClose={onClose} isCentered >
                 <ModalOverlay/>
-                <ModalContent>
-                    <ModalHeader>{user.name}</ModalHeader>
-                    <ModalCloseButton/>
-                    <ModalBody>
+                <ModalContent height="410px">
+                    <ModalHeader
+                    fontSize="40px"
+                    display="flex"
+                    justifyContent="center"
 
+                    >{user.name}</ModalHeader>
+                    <ModalCloseButton/>
+                    <ModalBody
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                        justifyContent="space-between"
+                    >
+                        <Image
+                            borderRadius="full"
+                            boxSize="150px"
+                            src={user.pic}
+                            alt={user.name}
+
+                        />
+                        <Text
+                            fontSize={{base: "28px", md: "30px"}}
+
+                        />
+                        Email: {user.email}
                     </ModalBody>
 
                     <ModalFooter>
