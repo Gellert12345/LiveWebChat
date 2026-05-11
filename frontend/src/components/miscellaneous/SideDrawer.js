@@ -14,7 +14,7 @@ import {
     DrawerContent,
     DrawerHeader,
     DrawerBody,
-    Input,
+    Input, useToast,
 } from "@chakra-ui/react";
 import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import {Avatar} from "@chakra-ui/react"
@@ -22,6 +22,7 @@ import {ChatState} from "../../Context/ChatProvider.js";
 import {ProfileModel} from "../miscellaneous/ProfileModel.js";
 import { useHistory } from "react-router-dom";
 import { useDisclosure } from "@chakra-ui/react";
+import axios from "axios";
 
 
 const SideDrawer = () => {
@@ -39,6 +40,42 @@ const SideDrawer = () => {
         localStorage.removeItem("userInfo");
         useHistory.push("/");
     };
+
+    const toast = useToast();
+    const handleSearch = async () => {
+        if(!search) {
+            toast({
+                title: "Please Enter something in search",
+                status: "warning",
+                duration: 5000,
+                isClosable: true,
+                position: "top-right",
+            });
+        }
+
+    try  {
+        setLoading(true);
+        const config = {
+            headers: {
+                Authorization: `Bearer ${user.token}`,
+
+            },
+        };
+        const {data} = await axios.get(`/api/user?search${search}`,config);
+
+        setLoading(false);
+        setSearchResult(data);
+    } catch (error) {
+        toast({
+            title: "Error Occured",
+            descrition: "Failed to load the search results",
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            position: "bottom-left",
+        })
+    }
+    }
 
 
     return (
@@ -90,20 +127,22 @@ const SideDrawer = () => {
                 <DrawerOverlay/>
                 <DrawerContent borderWidth="1px">
                     <DrawerHeader borderBottomWidth="1px">Search Users</DrawerHeader>
+
+                    <DrawerBody>
+                        <Box display="flex" paddingBottom={2}>
+                            <Input
+                                placeholder="Search by name or email"
+                                marginRight={2}
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            ></Input>
+                            <Button
+                                //onClick={handleSearch}
+                            >Go</Button>
+                        </Box>
+                    </DrawerBody>
                 </DrawerContent>
-                <DrawerBody>
-                    <Box display="flex" paddingBottom={2}>
-                        <Input
-                            placeholder="Search by name or email"
-                            marginRight={2}
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        ></Input>
-                        <Button
-                            //onClick={handleSearch}
-                        >Go</Button>
-                    </Box>
-                </DrawerBody>
+
             </Drawer>
         </>
     );
