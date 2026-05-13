@@ -4,7 +4,7 @@ import generateToken from "../config/generateToken.js";
 
 const registerUser = asyncHandler(async (req, res) => {
     const { name, email, password, pic } = req.body;
-
+    //ha semmi sincs(kesobb csinald meg specifkusabbra !!!!
     if (!name || !email || !password) {
         res.status(400);
         throw new Error("Please enter all required fields");
