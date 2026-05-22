@@ -1,148 +1,164 @@
 import React, { useState } from "react";
 import {
+    Avatar,
     Box,
-    Tooltip,
     Button,
-    Text,
-    Menu,
-    MenuButton,
-    MenuItem,
-    MenuList,
-    MenuDivider,
     Drawer,
-    DrawerOverlay,
+    DrawerBody,
     DrawerContent,
     DrawerHeader,
-    DrawerBody,
-    Input, useToast,
+    DrawerOverlay,
+    Input,
+    Menu,
+    MenuButton,
+    MenuDivider,
+    MenuItem,
+    MenuList,
+    Text,
+    Tooltip,
+    useDisclosure,
+    useToast,
 } from "@chakra-ui/react";
 import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
-import {Avatar} from "@chakra-ui/react"
-import {ChatState} from "../../Context/ChatProvider.js";
-import {ProfileModel} from "../miscellaneous/ProfileModel.js";
 import { useHistory } from "react-router-dom";
-import { useDisclosure } from "@chakra-ui/react";
 import axios from "axios";
 
+import { ChatState } from "../../Context/ChatProvider.js";
+import { ProfileModel } from "../miscellaneous/ProfileModel.js";
 
 const SideDrawer = () => {
     const [search, setSearch] = useState("");
     const [searchResult, setSearchResult] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [loadingChat, setLoadingChat] = useState(false);
-    const  {user} =ChatState();
 
+    const { user } = ChatState();
     const history = useHistory();
-    const {isOpen , onOpen , onClose} = useDisclosure();
-
+    const toast = useToast();
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const logoutHandler = () => {
         localStorage.removeItem("userInfo");
-        useHistory.push("/");
+        history.push("/");
     };
 
-    const toast = useToast();
     const handleSearch = async () => {
-        if(!search) {
+        if (!search.trim()) {
             toast({
-                title: "Please Enter something in search",
+                title: "Please enter something in search",
                 status: "warning",
                 duration: 5000,
                 isClosable: true,
                 position: "top-right",
             });
+            return;
         }
 
-    try  {
-        setLoading(true);
-        const config = {
-            headers: {
-                Authorization: `Bearer ${user.token}`,
+        try {
+            setLoading(true);
 
-            },
-        };
-        const {data} = await axios.get(`/api/user?search${search}`,config);
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            };
 
-        setLoading(false);
-        setSearchResult(data);
-    } catch (error) {
-        toast({
-            title: "Error Occured",
-            descrition: "Failed to load the search results",
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-            position: "bottom-left",
-        })
-    }
-    }
-
+            const { data } = await axios.get(`/api/user?search=${search}`, config);
+            setSearchResult(data);
+        } catch (error) {
+            toast({
+                title: "Error occurred",
+                description: "Failed to load the search results",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+                position: "bottom-left",
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <>
-        <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            bg="white"
-            w="100%"
-            px="10px"
-            py="5px"
-            borderWidth="1px"
-        >
-            <Tooltip label="Search Users to chat" hasArrow placement="bottom-end">
-                <Button variant="ghost" onClick={onOpen}>
-                    <i className="fa-solid fa-magnifying-glass"></i>
-                    <Text display={{ base: "none", md: "flex" }} px="4">
-                        Search User
-                    </Text>
-                </Button>
-            </Tooltip>
+            <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                bg="white"
+                w="100%"
+                px="10px"
+                py="5px"
+                borderWidth="1px"
+            >
+                <Tooltip label="Search Users to chat" hasArrow placement="bottom-end">
+                    <Button variant="ghost" onClick={onOpen}>
+                        <i className="fa-solid fa-magnifying-glass"></i>
+                        <Text display={{ base: "none", md: "flex" }} px="4">
+                            Search User
+                        </Text>
+                    </Button>
+                </Tooltip>
 
-            <Text fontSize="2xl">ChatApp</Text>
+                <Text fontSize="2xl">ChatApp</Text>
 
-            <Box display="flex" alignItems="center" gap="10px">
-                <Menu>
-                    <MenuButton as={Button}>
-                        <BellIcon fontSize="2xl" />
-                    </MenuButton>
-                </Menu>
+                <Box display="flex" alignItems="center" gap="10px">
+                    <Menu>
+                        <MenuButton as={Button}>
+                            <BellIcon fontSize="2xl" />
+                        </MenuButton>
+                    </Menu>
 
-                <Menu>
-                    <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
-                        <Avatar size="sm" cursor="pointer" name ={user.name} src={user.pic}></Avatar>
-                    </MenuButton>
-                    <MenuList>
-                        <ProfileModel user={user}>
-                            <MenuItem>My profile</MenuItem>
-                        </ProfileModel>
-                        <MenuDivider/>
-                        <MenuItem onClick={logoutHandler}>Log out</MenuItem>
-                    </MenuList>
-                </Menu>
+                    <Menu>
+                        <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>
+                            <Avatar size="sm" cursor="pointer" name={user?.name} src={user?.pic} />
+                        </MenuButton>
+
+                        <MenuList>
+                            <ProfileModel user={user}>
+                                <MenuItem>My Profile</MenuItem>
+                            </ProfileModel>
+                            <MenuDivider />
+                            <MenuItem onClick={logoutHandler}>Log out</MenuItem>
+                        </MenuList>
+                    </Menu>
+                </Box>
             </Box>
-        </Box>
 
             <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
-                <DrawerOverlay/>
-                <DrawerContent borderWidth="1px">
+                <DrawerOverlay />
+                <DrawerContent>
                     <DrawerHeader borderBottomWidth="1px">Search Users</DrawerHeader>
 
                     <DrawerBody>
-                        <Box display="flex" paddingBottom={2}>
+                        <Box display="flex" pb={2}>
                             <Input
                                 placeholder="Search by name or email"
-                                marginRight={2}
+                                mr={2}
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                            ></Input>
-                            <Button
-                                //onClick={handleSearch}
-                            >Go</Button>
+                            />
+                            <Button onClick={handleSearch} isLoading={loading}>
+                                Go
+                            </Button>
                         </Box>
+
+                        {searchResult.map((user) => (
+                            <Box
+                                key={user._id}
+                                p={3}
+                                bg="#E8E8E8"
+                                w="100%"
+                                borderRadius="lg"
+                                cursor="pointer"
+                                mb={2}
+                                _hover={{ background: "#38B2AC", color: "white" }}
+                            >
+                                <Text fontWeight="bold">{user.name}</Text>
+                                <Text fontSize="sm">{user.email}</Text>
+                            </Box>
+                        ))}
                     </DrawerBody>
                 </DrawerContent>
-
             </Drawer>
         </>
     );
