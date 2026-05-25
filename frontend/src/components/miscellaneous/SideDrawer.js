@@ -57,9 +57,9 @@ function SideDrawer() {
     };
 
     const handleSearch = async () => {
-        if (!search) {
+        if (!search.trim()) {
             toast({
-                title: "Please Enter something in search",
+                title: "Please enter something in search",
                 status: "warning",
                 duration: 5000,
                 isClosable: true,
@@ -75,40 +75,45 @@ function SideDrawer() {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
+                params: {
+                    search,
+                },
             };
 
-            const { data } = await axios.get(`/api/user?search=${search}`, config);
-
-            setLoading(false);
+            const { data } = await axios.get("/api/user", config);
             setSearchResult(data);
         } catch (error) {
             toast({
-                title: "Error Occured!",
-                description: "Failed to Load the Search Results",
+                title: "Error occurred",
+                description: "Failed to load the search results",
                 status: "error",
                 duration: 5000,
                 isClosable: true,
                 position: "bottom-left",
             });
+        } finally {
+            setLoading(false);
         }
     };
 
     const accessChat = async (userId) => {
-        console.log(userId);
-
         try {
             setLoadingChat(true);
+
             const config = {
                 headers: {
                     "Content-type": "application/json",
                     Authorization: `Bearer ${user.token}`,
                 },
             };
-            const { data } = await axios.post(`/api/chat`, { userId }, config);
 
-            if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
+            const { data } = await axios.post("/api/chat", { userId }, config);
+
+            if (!chats.find((c) => c._id === data._id)) {
+                setChats([data, ...chats]);
+            }
+
             setSelectedChat(data);
-            setLoadingChat(false);
             onClose();
         } catch (error) {
             toast({
@@ -119,6 +124,8 @@ function SideDrawer() {
                 isClosable: true,
                 position: "bottom-left",
             });
+        } finally {
+            setLoadingChat(false);
         }
     };
 
@@ -141,9 +148,11 @@ function SideDrawer() {
                         </Text>
                     </Button>
                 </Tooltip>
+
                 <Text fontSize="2xl" fontFamily="Work sans">
                     Talk-A-Tive
                 </Text>
+
                 <div>
                     <Menu>
                         <MenuButton p={1}>
@@ -160,18 +169,28 @@ function SideDrawer() {
                                     key={notif._id}
                                     onClick={() => {
                                         setSelectedChat(notif.chat);
-                                        setNotification(notification.filter((n) => n !== notif));
+                                        setNotification(
+                                            notification.filter((n) => n !== notif)
+                                        );
                                     }}
                                 >
                                     {notif.chat.isGroupChat
                                         ? `New Message in ${notif.chat.chatName}`
-                                        : `New Message from ${getSender(user, notif.chat.users)}`}
+                                        : `New Message from ${getSender(
+                                            user,
+                                            notif.chat.users
+                                        )}`}
                                 </MenuItem>
                             ))}
                         </MenuList>
                     </Menu>
+
                     <Menu>
-                        <MenuButton as={Button} bg="white" rightIcon={<ChevronDownIcon />}>
+                        <MenuButton
+                            as={Button}
+                            bg="white"
+                            rightIcon={<ChevronDownIcon />}
+                        >
                             <Avatar
                                 size="sm"
                                 cursor="pointer"
@@ -181,7 +200,7 @@ function SideDrawer() {
                         </MenuButton>
                         <MenuList>
                             <ProfileModal user={user}>
-                                <MenuItem>My Profile</MenuItem>{" "}
+                                <MenuItem>My Profile</MenuItem>
                             </ProfileModal>
                             <MenuDivider />
                             <MenuItem onClick={logoutHandler}>Logout</MenuItem>
@@ -204,6 +223,7 @@ function SideDrawer() {
                             />
                             <Button onClick={handleSearch}>Go</Button>
                         </Box>
+
                         {loading ? (
                             <ChatLoading />
                         ) : (
@@ -215,6 +235,7 @@ function SideDrawer() {
                                 />
                             ))
                         )}
+
                         {loadingChat && <Spinner ml="auto" d="flex" />}
                     </DrawerBody>
                 </DrawerContent>

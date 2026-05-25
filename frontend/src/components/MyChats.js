@@ -1,10 +1,6 @@
 import React from "react";
-
+import { ChatState } from  "../Context/ChatProvider"
 const MyChats = () => {
-    return (
-        <div>
-            My Chats
-        </div>
-    )
+    const {selectedChat, setSelectedChat, user, chats ,setChats} = ChatState();
 }
 export default MyChats;

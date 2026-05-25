@@ -1,5 +1,6 @@
 import { createContext , useContext , useState ,useEffect} from "react"
 import {useHistory } from "react-router-dom";
+import {useDisclosure} from "@chakra-ui/hooks";
 
 
 const ChatContext = createContext()
@@ -9,6 +10,7 @@ export const ChatProvider = ({children}) => {
     const [user, setUser] = useState();
     const [selectedChat, setSelectedChat] = useState();
     const [chats, setChats] = useState([]);
+
 
     const history = useHistory();
     useEffect(() => {
