@@ -27,6 +27,7 @@ import { useHistory } from "react-router-dom";
 
 import { ChatState } from "../../Context/ChatProvider";
 import {ProfileModel} from "./ProfileModel";
+import {c} from "react/compiler-runtime";
 
 function SideDrawer() {
     const [search, setSearch] = useState("");
@@ -77,7 +78,10 @@ function SideDrawer() {
             };
 
             const { data } = await axios.get("/api/user", config);
-            setSearchResult(data);
+
+            if(!chats.find((c)=> c._id === data._id)) setSelectedChat(data);
+            setLoadingChat(false);
+            onClose();
         } catch (error) {
             toast({
                 title: "Error occurred",

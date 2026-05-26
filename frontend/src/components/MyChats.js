@@ -1,8 +1,6 @@
-import React from "react";
+import React ,{useState} from "react";
 import { ChatState } from  "../Context/ChatProvider"
-import {useState} from "react";
 import {useToast} from "@chakra-ui/react";
-import {config} from "dotenv";
 import axios from "axios";
 const MyChats = () => {
     const [loggedUser, setLoggedeUser] = useState(); // ha valtzoik ujra rendel
@@ -28,7 +26,7 @@ const MyChats = () => {
                 isClosable: true,
                 position: "bottom-left",
             });
-        };
+        }
     };
 
 
