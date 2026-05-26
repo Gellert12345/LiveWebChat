@@ -1,36 +1,32 @@
-import { Button } from "@chakra-ui/button";
-import { useDisclosure } from "@chakra-ui/hooks";
-import { Input } from "@chakra-ui/input";
-import { Box, Text } from "@chakra-ui/layout";
+import React, { useState } from "react";
 import {
-    Menu,
-    MenuButton,
-    MenuDivider,
-    MenuItem,
-    MenuList,
-} from "@chakra-ui/menu";
-import {
+    Avatar,
+    Badge,
+    Box,
+    Button,
     Drawer,
     DrawerBody,
     DrawerContent,
     DrawerHeader,
     DrawerOverlay,
-} from "@chakra-ui/modal";
-import { Tooltip } from "@chakra-ui/tooltip";
+    Input,
+    Menu,
+    MenuButton,
+    MenuDivider,
+    MenuItem,
+    MenuList,
+    Spinner,
+    Text,
+    Tooltip,
+    useDisclosure,
+    useToast,
+} from "@chakra-ui/react";
 import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
-import { Avatar } from "@chakra-ui/avatar";
-import { useHistory } from "react-router-dom";
-import { useState } from "react";
 import axios from "axios";
-import { useToast } from "@chakra-ui/toast";
-import ChatLoading from "../ChatLoading";
-import { Spinner } from "@chakra-ui/spinner";
-import ProfileModal from "./ProfileModal";
-import NotificationBadge from "react-notification-badge";
-import { Effect } from "react-notification-badge";
-import { getSender } from "../../config/ChatLogics";
-import UserListItem from "../userAvatar/UserListItem";
+import { useHistory } from "react-router-dom";
+
 import { ChatState } from "../../Context/ChatProvider";
+import {ProfileModel} from "./ProfileModel";
 
 function SideDrawer() {
     const [search, setSearch] = useState("");
@@ -41,9 +37,9 @@ function SideDrawer() {
     const {
         setSelectedChat,
         user,
-        notification,
+        notification = [],
         setNotification,
-        chats,
+        chats = [],
         setChats,
     } = ChatState();
 
@@ -132,18 +128,18 @@ function SideDrawer() {
     return (
         <>
             <Box
-                d="flex"
+                display="flex"
                 justifyContent="space-between"
                 alignItems="center"
                 bg="white"
                 w="100%"
-                p="5px 10px 5px 10px"
+                p="5px 10px"
                 borderWidth="5px"
             >
                 <Tooltip label="Search Users to chat" hasArrow placement="bottom-end">
                     <Button variant="ghost" onClick={onOpen}>
                         <i className="fas fa-search"></i>
-                        <Text d={{ base: "none", md: "flex" }} px={4}>
+                        <Text display={{ base: "none", md: "flex" }} px={4}>
                             Search User
                         </Text>
                     </Button>
@@ -153,15 +149,23 @@ function SideDrawer() {
                     Talk-A-Tive
                 </Text>
 
-                <div>
+                <Box display="flex" alignItems="center" gap={2}>
                     <Menu>
-                        <MenuButton p={1}>
-                            <NotificationBadge
-                                count={notification.length}
-                                effect={Effect.SCALE}
-                            />
+                        <MenuButton p={1} position="relative">
                             <BellIcon fontSize="2xl" m={1} />
+                            {notification.length > 0 && (
+                                <Badge
+                                    borderRadius="full"
+                                    colorScheme="red"
+                                    position="absolute"
+                                    top="-1"
+                                    right="-1"
+                                >
+                                    {notification.length}
+                                </Badge>
+                            )}
                         </MenuButton>
+
                         <MenuList pl={2}>
                             {!notification.length && "No New Messages"}
                             {notification.map((notif) => (
@@ -176,10 +180,7 @@ function SideDrawer() {
                                 >
                                     {notif.chat.isGroupChat
                                         ? `New Message in ${notif.chat.chatName}`
-                                        : `New Message from ${getSender(
-                                            user,
-                                            notif.chat.users
-                                        )}`}
+                                        : "New Message"}
                                 </MenuItem>
                             ))}
                         </MenuList>
@@ -194,19 +195,20 @@ function SideDrawer() {
                             <Avatar
                                 size="sm"
                                 cursor="pointer"
-                                name={user.name}
-                                src={user.pic}
+                                name={user?.name}
+                                src={user?.pic}
                             />
                         </MenuButton>
+
                         <MenuList>
-                            <ProfileModal user={user}>
+                            <ProfileModel user={user}>
                                 <MenuItem>My Profile</MenuItem>
-                            </ProfileModal>
+                            </ProfileModel>
                             <MenuDivider />
                             <MenuItem onClick={logoutHandler}>Logout</MenuItem>
                         </MenuList>
                     </Menu>
-                </div>
+                </Box>
             </Box>
 
             <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
@@ -214,7 +216,7 @@ function SideDrawer() {
                 <DrawerContent>
                     <DrawerHeader borderBottomWidth="1px">Search Users</DrawerHeader>
                     <DrawerBody>
-                        <Box d="flex" pb={2}>
+                        <Box display="flex" pb={2}>
                             <Input
                                 placeholder="Search by name or email"
                                 mr={2}
@@ -225,18 +227,26 @@ function SideDrawer() {
                         </Box>
 
                         {loading ? (
-                            <ChatLoading />
+                            <Spinner />
                         ) : (
-                            searchResult?.map((user) => (
-                                <UserListItem
-                                    key={user._id}
-                                    user={user}
-                                    handleFunction={() => accessChat(user._id)}
-                                />
+                            searchResult?.map((searchedUser) => (
+                                <Box
+                                    key={searchedUser._id}
+                                    onClick={() => accessChat(searchedUser._id)}
+                                    cursor="pointer"
+                                    bg="#E8E8E8"
+                                    px={3}
+                                    py={2}
+                                    mb={2}
+                                    borderRadius="lg"
+                                >
+                                    <Text>{searchedUser.name}</Text>
+                                    <Text fontSize="sm">{searchedUser.email}</Text>
+                                </Box>
                             ))
                         )}
 
-                        {loadingChat && <Spinner ml="auto" d="flex" />}
+                        {loadingChat && <Spinner ml="auto" display="flex" />}
                     </DrawerBody>
                 </DrawerContent>
             </Drawer>
