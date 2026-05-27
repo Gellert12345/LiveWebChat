@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { ChatState } from "../Context/ChatProvider";
-import { useToast, Box } from "@chakra-ui/react";
+import {useToast, Box, Button} from "@chakra-ui/react";
 import axios from "axios";
+import {AddIcon} from "@chakra-ui/icons";
 
 const MyChats = () => {
     const [loggedUser, setLoggedeUser] = useState();
@@ -57,7 +58,27 @@ const MyChats = () => {
                 alignItems="center"
             >
                 My Chats
+                <Button
+                    display="flex"
+                    fontSize={{ base: "17px", md: "10px",lg: "17px" }}
+                    rightIcon={<AddIcon />}
+
+                >New Group Chat</Button>
             </Box>
+            <Box
+                display="flex"
+                flexDir="column"
+                padding={3}
+                bg="F8F8F8"
+                width="100%"
+                height="100%"
+                borderRadius="lg"
+                overflowY="hidden"
+
+            >
+
+            </Box>
+
         </Box>
     );
 };
