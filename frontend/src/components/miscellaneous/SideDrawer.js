@@ -79,9 +79,7 @@ function SideDrawer() {
 
             const { data } = await axios.get("/api/user", config);
 
-            if(!chats.find((c)=> c._id === data._id)) setSelectedChat(data);
-            setLoadingChat(false);
-            onClose();
+            setSearchResult(data);
         } catch (error) {
             toast({
                 title: "Error occurred",

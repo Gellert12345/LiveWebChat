@@ -1,21 +1,23 @@
-import React ,{useState} from "react";
-import { ChatState } from  "../Context/ChatProvider"
-import {useToast} from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { ChatState } from "../Context/ChatProvider";
+import { useToast, Box } from "@chakra-ui/react";
 import axios from "axios";
+
 const MyChats = () => {
-    const [loggedUser, setLoggedeUser] = useState(); // ha valtzoik ujra rendel
-    const {selectedChat, setSelectedChat, user, chats ,setChats} = ChatState();
+    const [loggedUser, setLoggedeUser] = useState();
+    const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
 
     const toast = useToast();
 
-    const fetchCHats = async () => {
+    const fetchChats = async () => {
         try {
             const config = {
                 headers: {
                     Authorization: `Bearer ${user.token}`,
                 },
-                };
-            const{data} = await axios.get("/api/chat", config);
+            };
+
+            const { data } = await axios.get("/api/chat", config);
             setChats(data);
         } catch (error) {
             toast({
@@ -29,7 +31,35 @@ const MyChats = () => {
         }
     };
 
+    useEffect(() => {
+        setLoggedeUser(JSON.parse(localStorage.getItem("userInfo")));
+        fetchChats();
+    }, []);
 
-    return <div>My Chats</div>
+    return (
+        <Box
+            display={{ base: selectedChat ? "none" : "flex", md: "flex" }}
+            flexDir="column"
+            alignItems="center"
+            p={3}
+            bg="white"
+            w={{ base: "100%", md: "31%" }}
+            borderRadius="lg"
+            borderWidth="1px"
+        >
+            <Box
+                pb={3}
+                px={3}
+                fontSize={{ base: "28px", md: "30px" }}
+                display="flex"
+                w="100%"
+                justifyContent="space-between"
+                alignItems="center"
+            >
+                My Chats
+            </Box>
+        </Box>
+    );
 };
+
 export default MyChats;
