@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ChatState } from "../Context/ChatProvider";
-import {useToast, Box, Button, Stack} from "@chakra-ui/react";
+import {useToast, Box, Button, Stack, Text} from "@chakra-ui/react";
 import axios from "axios";
 import {AddIcon} from "@chakra-ui/icons";
 import {getSender} from "../config/ChatLogics";
