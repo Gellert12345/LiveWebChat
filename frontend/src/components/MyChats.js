@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { ChatState } from "../Context/ChatProvider";
-import {useToast, Box, Button} from "@chakra-ui/react";
+import {useToast, Box, Button, Stack} from "@chakra-ui/react";
 import axios from "axios";
 import {AddIcon} from "@chakra-ui/icons";
+import {getSender} from "../config/ChatLogics";
+//import {Chatloading} from
 
 const MyChats = () => {
     const [loggedUser, setLoggedeUser] = useState();
@@ -76,7 +78,30 @@ const MyChats = () => {
                 overflowY="hidden"
 
             >
-
+                {chats ? (
+                    <Stack
+                        overflowY="scroll"
+                    >{chats.map(()=>(
+                        <Box
+                            onClick={() => setSelectedChat(chats)}
+                            cursor="pointer"
+                            bg={selectedChat === chats ? "#38B2AC" : "#E8E8E8"}
+                            color={selectedChat === chats ? "white" : "black"}
+                            px={3}
+                            py={2}
+                            borderRadius="lg"
+                            key={chats._id}
+                        >
+                            <Text>
+                                {!chats.isGroupChat?
+                                    getSender(loggedUser,chats.users)
+                                    : chats.chatName }
+                            </Text>
+                        </Box>
+                    ))}</Stack>
+                ): (
+                    <ChatLoading></ChatLoading>
+                )}
             </Box>
 
         </Box>
