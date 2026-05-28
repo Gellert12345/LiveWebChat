@@ -1,5 +1,5 @@
 //MyChats groupChatModel szemantikus elemet irjui meg itt like <h1></h1>
-import React from "react";
+import React, {useState} from "react";
 import {useDisclosure} from "@chakra-ui/hooks";
 import {
     Button,
@@ -9,13 +9,23 @@ import {
     ModalContent,
     ModalFooter,
     ModalHeader,
-    ModalOverlay
+    ModalOverlay, useToast
 } from "@chakra-ui/react";
+import {ChatState} from "../../Context/ChatProvider";
 
 // itt a children az a myChats.js-be a button!
 const GroupChatModel = ({children}) => {
 
     const { isOpen,onOpen, onClose} = useDisclosure();
+    const [groupChatName, setGroupChatName] = useState();
+    const [selectedUsers, setSelectedUsers] = useState([]);
+    const [search,setSearch] = useState("");
+    const [searchResults, setSearchResults] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    const toast = useToast();
+
+    const {user, chats,setChats} = ChatState();
 
     return (
         <>
@@ -23,7 +33,7 @@ const GroupChatModel = ({children}) => {
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay/>
                 <ModalContent>
-                    <ModalHeader>Modal title</ModalHeader>
+                    <ModalHeader>Create Group Chat</ModalHeader>
                     <ModalCloseButton/>
                     <ModalBody>
 
