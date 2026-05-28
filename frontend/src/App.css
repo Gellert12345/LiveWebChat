@@ -7,7 +7,7 @@
     color: black;
     text-align: center;
 }
-
+/*scrollbar remover */
 ::-webkit-scrollbar {
     width: 0px;
 }

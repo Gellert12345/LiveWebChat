@@ -4,7 +4,7 @@ import {useToast, Box, Button, Stack, Text} from "@chakra-ui/react";
 import axios from "axios";
 import {AddIcon} from "@chakra-ui/icons";
 import {getSender} from "../config/ChatLogics";
-//import {Chatloading} from
+import {GroupChatModel} from "./miscellaneous/GroupChatModel";
 
 const MyChats = () => {
     const [loggedUser, setLoggedeUser] = useState();
@@ -60,12 +60,14 @@ const MyChats = () => {
                 alignItems="center"
             >
                 My Chats
+                <GroupChatModal>
                 <Button
                     display="flex"
                     fontSize={{ base: "17px", md: "10px",lg: "17px" }}
                     rightIcon={<AddIcon />}
 
                 >New Group Chat</Button>
+                </GroupChatModal>
             </Box>
             <Box
                 display="flex"
