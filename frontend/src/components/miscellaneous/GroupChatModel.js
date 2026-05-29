@@ -3,13 +3,14 @@ import React, {useState} from "react";
 import {useDisclosure} from "@chakra-ui/hooks";
 import {
     Button,
-    ButtonGroup,
-    Modal,
+    ButtonGroup, FormControl,
+    Modal, ModalBody,
     ModalCloseButton,
     ModalContent,
     ModalFooter,
     ModalHeader,
-    ModalOverlay, useToast
+    ModalOverlay, useToast,
+    Input
 } from "@chakra-ui/react";
 import {ChatState} from "../../Context/ChatProvider";
 
@@ -33,10 +34,20 @@ const GroupChatModel = ({children}) => {
             <Modal isOpen={isOpen} onClose={onClose}>
                 <ModalOverlay/>
                 <ModalContent>
-                    <ModalHeader>Create Group Chat</ModalHeader>
+                    <ModalHeader
+                        fontSize="35px"
+                        display="flex"
+                        justifyContent="center"
+                    >Create Group Chat</ModalHeader>
                     <ModalCloseButton/>
-                    <ModalBody>
-
+                    <ModalBody
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                    >
+                        <FormControl>
+                            <Input></Input>
+                        </FormControl>
                     </ModalBody>
 
                 <ModalFooter>
