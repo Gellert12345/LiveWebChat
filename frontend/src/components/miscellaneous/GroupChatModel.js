@@ -13,6 +13,7 @@ import {
     Input
 } from "@chakra-ui/react";
 import {ChatState} from "../../Context/ChatProvider";
+import axios from "axios";
 
 // itt a children az a myChats.js-be a button!
 const GroupChatModel = ({children}) => {
@@ -27,6 +28,37 @@ const GroupChatModel = ({children}) => {
     const toast = useToast();
 
     const {user, chats,setChats} = ChatState();
+
+    const handleSearch = async (query) => {
+        setSearch(query);
+        if(!query){
+            return;
+        }
+        try {
+            setLoading(true);
+            const  config = {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            };
+            const {data} = await axios.get(`api/user?search${search}`, config); //data === user search
+            console.log(data);
+            setLoading(false);
+            setSearchResults(data);
+        } catch(error) {
+            toast({
+                title: "Error Occured",
+                description: "Failed to load the search results",
+                status: 500,
+                duration: 5000,
+                isClosable: true,
+                position: "bottom-left",
+            })
+        }
+    };
+
+
+    const handleSubmit = () => {};
 
     return (
         <>
@@ -46,13 +78,24 @@ const GroupChatModel = ({children}) => {
                         alignItems="center"
                     >
                         <FormControl>
-                            <Input></Input>
+                            <Input placeholder="Chat Name"
+                                   mb={3}
+                                   onChange={(e) => setGroupChatName(e.target.value)}
+                            />
                         </FormControl>
+                        <FormControl>
+                            <Input placeholder="Add Users eg: Jazi Imi Gellert"
+                                   mb={1}
+                                   onChange={(e) => handleSearch(e.target.value)}
+                            />
+                        </FormControl>
+                        {/*selected users*/}
+                        {/*render searched users*/}
                     </ModalBody>
 
                 <ModalFooter>
-                    <Button colorScheme="blue" mr={3} onClick={onClose}>Close</Button>
-                    <Button variant="ghost">Secondary action</Button>
+                    <Button colorScheme="blue"  onClick={handleSubmit}>Close</Button>
+                    Create Chat
                 </ModalFooter>
                 </ModalContent>
             </Modal>
