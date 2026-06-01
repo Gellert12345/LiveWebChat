@@ -10,7 +10,7 @@ import {
     ModalFooter,
     ModalHeader,
     ModalOverlay, useToast,
-    Input
+    Input, Box
 } from "@chakra-ui/react";
 import {ChatState} from "../../Context/ChatProvider";
 import axios from "axios";
@@ -59,6 +59,7 @@ const GroupChatModel = ({children}) => {
 
 
     const handleSubmit = () => {};
+    const handleDelete = () => {};
     const handleGroup = () => {
         if(selectedUsers.includes(userToAdd)) {
             toast({
@@ -102,12 +103,14 @@ const GroupChatModel = ({children}) => {
                                    onChange={(e) => handleSearch(e.target.value)}
                             />
                         </FormControl>
+                        <Box width="100%" display="flex" flexWrap="wrap">
                         {selectedUsers.map(u => (
                             <UserBadgeItem key={user._id}
                                            user={u}
                                            handleFunction={()=> handleDelete(u)}
                             />
                         ))}
+                        </Box>
                         {loading?<div>loading</div>: (
                             searchResults?.slice(0, 4).map(user=>(
                                 <UserListitem key={user._id} user={user} handleFunction={()=> handleGroup(user)}></UserListitem>
