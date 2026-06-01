@@ -41,7 +41,7 @@ const GroupChatModel = ({children}) => {
                     Authorization: `Bearer ${user.token}`,
                 },
             };
-            const {data} = await axios.get(`api/user?search=${search}`, config); //data === user search
+            const {data} = await axios.get(`/api/user?search=${search}`, config); //data === user search
             console.log(data);
             setLoading(false);
             setSearchResults(data);
@@ -49,7 +49,7 @@ const GroupChatModel = ({children}) => {
             toast({
                 title: "Error Occured",
                 description: "Failed to load the search results",
-                status: 500,
+                status: "error",
                 duration: 5000,
                 isClosable: true,
                 position: "bottom-left",
@@ -59,6 +59,19 @@ const GroupChatModel = ({children}) => {
 
 
     const handleSubmit = () => {};
+    const handleGroup = () => {
+        if(selectedUsers.includes(userToAdd)) {
+            toast({
+                title: "User Already Added",
+                status: "warning",
+                duration: 5000,
+                isClosable: true,
+                position: "top",
+            })
+            return;
+        }
+        setSelectedUsers([...selectedUsers,userToAdd]);
+    };
 
     return (
         <>
@@ -89,9 +102,14 @@ const GroupChatModel = ({children}) => {
                                    onChange={(e) => handleSearch(e.target.value)}
                             />
                         </FormControl>
-                        {/*selected users*/}
+                        {selectedUsers.map(u => (
+                            <UserBadgeItem key={user._id}
+                                           user={u}
+                                           handleFunction={()=> handleDelete(u)}
+                            />
+                        ))}
                         {loading?<div>loading</div>: (
-                            searchResults?.slice(0.4).map(user=>(
+                            searchResults?.slice(0, 4).map(user=>(
                                 <UserListitem key={user._id} user={user} handleFunction={()=> handleGroup(user)}></UserListitem>
                             ))
                         )}
