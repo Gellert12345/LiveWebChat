@@ -5,7 +5,7 @@ import axios from "axios";
 import { AddIcon } from "@chakra-ui/icons";
 import { getSender } from "../config/ChatLogics";
 import GroupChatModal from "./miscellaneous/GroupChatModel";
-import ChatLoading from "./ChatLoading";
+import ChatLoading from "./ChatLoading.js";
 
 const MyChats = () => {
     const [loggedUser, setLoggedUser] = useState();

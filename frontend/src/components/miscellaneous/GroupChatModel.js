@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import {ChatState} from "../../Context/ChatProvider";
 import axios from "axios";
-
+import UserListitem from "../UserAvatar/UserListltem";
 // itt a children az a myChats.js-be a button!
 const GroupChatModel = ({children}) => {
 
@@ -41,7 +41,7 @@ const GroupChatModel = ({children}) => {
                     Authorization: `Bearer ${user.token}`,
                 },
             };
-            const {data} = await axios.get(`api/user?search${search}`, config); //data === user search
+            const {data} = await axios.get(`api/user?search=${search}`, config); //data === user search
             console.log(data);
             setLoading(false);
             setSearchResults(data);
@@ -90,7 +90,11 @@ const GroupChatModel = ({children}) => {
                             />
                         </FormControl>
                         {/*selected users*/}
-                        {/*render searched users*/}
+                        {loading?<div>loading</div>: (
+                            searchResults?.slice(0.4).map(user=>(
+                                <UserListitem key={user._id} user={user} handleFunction={()=> handleGroup(user)}></UserListitem>
+                            ))
+                        )}
                     </ModalBody>
 
                 <ModalFooter>
