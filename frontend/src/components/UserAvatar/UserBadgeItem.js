@@ -6,7 +6,7 @@ const UserBadgeItem = (user, handleFunction) => {
         <Box
             px={2}
             py={1}
-            borderRadius={lg}
+            borderRadius="lg"
             m={1}
             mb={2}
             variant="solid"
