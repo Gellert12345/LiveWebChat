@@ -58,8 +58,40 @@ const GroupChatModel = ({children}) => {
     };
 
 
-    const handleSubmit = () => {};
-    const handleDelete = () => {};
+    const handleSubmit = async () => {
+        // ! => üres
+        if(!groupChatName || !selectedUsers) {
+            toast({
+                title: "Please fill all the fields",
+                status: "warning",
+                duration: 5000,
+                isClosable: true,
+                position: "top",
+            });
+            return;
+        }
+        try {
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${user.token}`,
+                },
+            };
+            //api call
+            const {data} = await axios.get("/api/user/group", {
+                name: groupChatName,
+                users: JSON.stringify(selectedUsers.map((u) => u.id)),
+            },config);
+            setChats(data, ...chats);
+            onClose();
+        } catch (error) {
+
+        }
+    };
+
+    //egsz visszavonas function
+    const handleDelete = (delUser) => {
+        setSelectedUsers(selectedUsers.filter((sel) => selectedUsers._id !== delUser.id));
+    };
     const handleGroup = () => {
         if(selectedUsers.includes(userToAdd)) {
             toast({
